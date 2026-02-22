@@ -1,53 +1,47 @@
-# HRMS Microservices Platform
+# HRMS SaaS Starter (Multi-tenant)
 
-Production-style HRMS starter built with microservice architecture.
+Production-oriented HRMS foundation inspired by enterprise HR patterns.
 
-## Services
-- `frontend` (React + Vite)
-- `gateway` (API Gateway on port `8080`)
-- `auth-service` (users, auth stubs)
-- `employee-service` (employee records)
-- `leave-service` (leave requests)
-- `payroll-service` (payroll records)
+## Stack
+- Frontend: React + Tailwind (Vite)
+- Backend: Node.js + Express (modular domain APIs)
+- Database: PostgreSQL
+- Auth: JWT + refresh token + Google OAuth endpoints (ready hooks)
+- Storage: S3-compatible design hooks
+- Notifications: webhook + notification table/event stubs
 
-Each domain service owns its own Mongo database.
+## Modules Included (Foundation)
+- Auth + RBAC + multi-tenant guards
+- Employee Management (CRUD)
+- Attendance Tracking (check-in/out, geofence metadata)
+- Audit Logs
 
-## Architecture
-- Frontend calls only the API Gateway.
-- Gateway routes traffic to internal services.
-- Services are independently deployable and independently scalable.
+## SaaS + Enterprise Design
+- Tenant-aware data model (`tenant_id` scoped)
+- Role model: Admin, HR Manager, Team Manager, Employee, Custom roles
+- API-first with OpenAPI file
+- GDPR hooks: data export/delete request tables and endpoints scaffold
 
-## Local Run
+## Run Locally
 ```bash
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
-App URLs:
-- Frontend: `http://localhost:5173`
-- API Gateway: `http://localhost:8080`
+URLs:
+- Web: http://localhost:5173
+- API: http://localhost:8080
+- API Docs: http://localhost:8080/api-docs
 
-Health checks:
-- `GET /health` on gateway
-- `GET /health` on each service
+## Useful Commands
+```bash
+docker compose logs -f api
+docker compose exec api npm run db:migrate
+docker compose exec api npm run db:seed
+```
 
-## Service Endpoints via Gateway
-- `POST /api/auth/register`
-- `GET /api/auth/users`
-- `GET /api/employees`
-- `POST /api/employees`
-- `GET /api/leave`
-- `POST /api/leave`
-- `PATCH /api/leave/:id/approve`
-- `GET /api/payroll`
-- `POST /api/payroll`
-
-## Kubernetes
-Manifests are in `k8s/`.
-- Create namespace and secrets first.
-- Deploy databases, services, gateway, frontend, ingress.
-
-## Next Recommended Steps
-- Add JWT auth and RBAC.
-- Add Kafka/RabbitMQ for async payroll events.
-- Add Redis cache and rate limiting at gateway.
-- Add CI/CD and security scanning.
+## Folder Layout
+- `apps/web` - React dashboard
+- `apps/api` - Express API modules
+- `packages/db` - SQL schema + seed data
+- `docs` - architecture, ERD, API, auth flow, wireframes
+- `infra/docker` - container references

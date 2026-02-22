@@ -1,0 +1,30 @@
+# Folder Structure
+
+```text
+apps/
+  api/
+    src/
+      modules/
+        auth/
+        employees/
+        attendance/
+        audit/
+      middleware/
+      config/
+      scripts/
+  web/
+    src/
+      pages/
+      components/
+      lib/
+packages/
+  db/
+    migrations/
+    seed/
+docs/
+  architecture/
+  api/
+  ux/
+infra/
+  docker/
+```

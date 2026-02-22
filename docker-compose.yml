@@ -1,80 +1,43 @@
 services:
-  frontend:
-    build: ./frontend
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: hrms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "5173:80"
-    depends_on:
-      - gateway
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
 
-  gateway:
-    build: ./services/gateway
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      - postgres
+    environment:
+      PORT: 8080
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/hrms
+      JWT_ACCESS_SECRET: super_access_secret
+      JWT_REFRESH_SECRET: super_refresh_secret
+      ACCESS_TOKEN_TTL: 15m
+      REFRESH_TOKEN_TTL: 7d
+      GOOGLE_CLIENT_ID: demo
+      GOOGLE_CLIENT_SECRET: demo
+      GOOGLE_CALLBACK_URL: http://localhost:8080/api/v1/auth/google/callback
+      WEB_URL: http://localhost:5173
     ports:
       - "8080:8080"
-    environment:
-      - AUTH_SERVICE_URL=http://auth-service:8081
-      - EMPLOYEE_SERVICE_URL=http://employee-service:8082
-      - LEAVE_SERVICE_URL=http://leave-service:8083
-      - PAYROLL_SERVICE_URL=http://payroll-service:8084
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
     depends_on:
-      - auth-service
-      - employee-service
-      - leave-service
-      - payroll-service
-
-  auth-service:
-    build: ./services/auth-service
-    environment:
-      - PORT=8081
-      - MONGO_URI=mongodb://mongo-auth:27017/hrms_auth
-    depends_on:
-      - mongo-auth
-
-  employee-service:
-    build: ./services/employee-service
-    environment:
-      - PORT=8082
-      - MONGO_URI=mongodb://mongo-employee:27017/hrms_employee
-    depends_on:
-      - mongo-employee
-
-  leave-service:
-    build: ./services/leave-service
-    environment:
-      - PORT=8083
-      - MONGO_URI=mongodb://mongo-leave:27017/hrms_leave
-    depends_on:
-      - mongo-leave
-
-  payroll-service:
-    build: ./services/payroll-service
-    environment:
-      - PORT=8084
-      - MONGO_URI=mongodb://mongo-payroll:27017/hrms_payroll
-    depends_on:
-      - mongo-payroll
-
-  mongo-auth:
-    image: mongo:7
-    volumes:
-      - mongo_auth_data:/data/db
-
-  mongo-employee:
-    image: mongo:7
-    volumes:
-      - mongo_employee_data:/data/db
-
-  mongo-leave:
-    image: mongo:7
-    volumes:
-      - mongo_leave_data:/data/db
-
-  mongo-payroll:
-    image: mongo:7
-    volumes:
-      - mongo_payroll_data:/data/db
+      - api
+    ports:
+      - "5173:80"
 
 volumes:
-  mongo_auth_data:
-  mongo_employee_data:
-  mongo_leave_data:
-  mongo_payroll_data:
+  pg_data:
