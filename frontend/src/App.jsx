@@ -1,130 +1,158 @@
-import { useEffect, useState } from 'react';
-import ContactForm from './components/ContactForm';
+import { useEffect, useMemo, useState } from 'react';
 
 const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
-const profileImage = '/shresh.jpg';
-const heroAiImage =
-  'https://image.pollinations.ai/prompt/futuristic%20cloud%20native%20learning%20platform%20dashboard%20with%20kubernetes%20devops%20cybersecurity%20cinematic%20lighting%20high%20detail?width=1400&height=900&seed=3001';
-const aiGallery = [
-  'https://image.pollinations.ai/prompt/devops%20engineer%20working%20on%20multi%20screen%20kubernetes%20monitoring%20setup%20ultra%20realistic?width=900&height=600&seed=3101',
-  'https://image.pollinations.ai/prompt/mlops%20pipeline%20architecture%20with%20model%20deployment%20and%20observability%20dark%20theme%20cinematic?width=900&height=600&seed=3102',
-  'https://image.pollinations.ai/prompt/finops%20cloud%20cost%20optimization%20analytics%20dashboard%20professional%20ui%20high%20detail?width=900&height=600&seed=3103'
-];
 
-const tracks = [
-  {
-    title: 'DevOps Foundations',
-    level: 'Beginner to Intermediate',
-    modules: ['CI/CD Pipelines', 'Infrastructure as Code', 'Container Basics']
-  },
-  {
-    title: 'FinOps in Practice',
-    level: 'Intermediate',
-    modules: ['Cloud Cost Visibility', 'Budget Guardrails', 'Optimization Playbooks']
-  },
-  {
-    title: 'MLOps Delivery',
-    level: 'Intermediate to Advanced',
-    modules: ['Model Versioning', 'Automated Deployment', 'Model Monitoring']
-  },
-  {
-    title: 'SRE and Reliability',
-    level: 'Intermediate to Advanced',
-    modules: ['SLIs/SLOs', 'Error Budgets', 'Incident Response']
-  }
-];
+const emptyEmployee = { employeeId: '', name: '', department: '', title: '', salary: '' };
+const emptyLeave = { employeeId: '', reason: '', fromDate: '', toDate: '' };
+const emptyPayroll = { employeeId: '', month: '', baseSalary: '', bonus: '', deductions: '' };
 
 export default function App() {
-  const [articles, setArticles] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [leaves, setLeaves] = useState([]);
+  const [payroll, setPayroll] = useState([]);
+
+  const [employeeForm, setEmployeeForm] = useState(emptyEmployee);
+  const [leaveForm, setLeaveForm] = useState(emptyLeave);
+  const [payrollForm, setPayrollForm] = useState(emptyPayroll);
+
+  const totalHeadcount = employees.length;
+  const approvedLeaves = useMemo(() => leaves.filter((item) => item.status === 'APPROVED').length, [leaves]);
+  const totalPayroll = useMemo(
+    () => payroll.reduce((sum, item) => sum + Number(item.netPay || 0), 0).toFixed(2),
+    [payroll]
+  );
+
+  const fetchAll = async () => {
+    const [e, l, p] = await Promise.all([
+      fetch(`${apiBase}/api/employees`).then((r) => r.json()).catch(() => []),
+      fetch(`${apiBase}/api/leave`).then((r) => r.json()).catch(() => []),
+      fetch(`${apiBase}/api/payroll`).then((r) => r.json()).catch(() => [])
+    ]);
+    setEmployees(Array.isArray(e) ? e : []);
+    setLeaves(Array.isArray(l) ? l : []);
+    setPayroll(Array.isArray(p) ? p : []);
+  };
 
   useEffect(() => {
-    fetch(`${apiBase}/api/articles`)
-      .then((res) => res.json())
-      .then((data) => setArticles(data))
-      .catch(() => setArticles([]));
+    fetchAll();
   }, []);
 
-  return (
-    <div className="site-shell">
-      <header className="hero">
-        <img className="hero-ai" src={heroAiImage} alt="AI cloud learning banner" />
-        <div className="hero-content stack">
-          <div>
-            <p className="tag">Shresh Learning Platform</p>
-            <h1>Learn Cloud-Native Engineering with Real-World Playbooks</h1>
-            <p>
-              Structured learning paths across DevOps, FinOps, MLOps, SRE, and Cybersecurity with hands-on cloud
-              workflows.
-            </p>
-            <div className="chips">
-              <span>Project-Based</span>
-              <span>Interview Ready</span>
-              <span>GCP + Kubernetes</span>
-            </div>
-          </div>
+  const postJson = (url, payload) =>
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-          <aside className="profile-card">
-            <img src={profileImage} alt="Shresh profile" />
-            <h3>Shresh</h3>
-            <p>Cloud Native Mentor</p>
-            <small>Add your image at `frontend/public/shresh.jpg`</small>
-          </aside>
-        </div>
+  const createEmployee = async (event) => {
+    event.preventDefault();
+    await postJson(`${apiBase}/api/employees`, { ...employeeForm, salary: Number(employeeForm.salary) });
+    setEmployeeForm(emptyEmployee);
+    fetchAll();
+  };
+
+  const createLeave = async (event) => {
+    event.preventDefault();
+    await postJson(`${apiBase}/api/leave`, leaveForm);
+    setLeaveForm(emptyLeave);
+    fetchAll();
+  };
+
+  const createPayroll = async (event) => {
+    event.preventDefault();
+    await postJson(`${apiBase}/api/payroll`, {
+      ...payrollForm,
+      baseSalary: Number(payrollForm.baseSalary),
+      bonus: Number(payrollForm.bonus || 0),
+      deductions: Number(payrollForm.deductions || 0)
+    });
+    setPayrollForm(emptyPayroll);
+    fetchAll();
+  };
+
+  const approveLeave = async (id) => {
+    await fetch(`${apiBase}/api/leave/${id}/approve`, { method: 'PATCH' });
+    fetchAll();
+  };
+
+  return (
+    <div className="app">
+      <header className="hero">
+        <h1>HRMS Control Center</h1>
+        <p>Microservice-based HR platform for employee lifecycle, leave workflows, and payroll operations.</p>
       </header>
 
-      <main className="container">
-        <section>
-          <h2>Learning Tracks</h2>
-          <div className="track-grid">
-            {tracks.map((track) => (
-              <article className="track-card" key={track.title}>
-                <small>{track.level}</small>
-                <h3>{track.title}</h3>
-                <ul>
-                  {track.modules.map((module) => (
-                    <li key={module}>{module}</li>
-                  ))}
-                </ul>
-              </article>
+      <section className="stats">
+        <article>
+          <h3>{totalHeadcount}</h3>
+          <p>Total Employees</p>
+        </article>
+        <article>
+          <h3>{approvedLeaves}</h3>
+          <p>Approved Leaves</p>
+        </article>
+        <article>
+          <h3>${totalPayroll}</h3>
+          <p>Total Payroll Recorded</p>
+        </article>
+      </section>
+
+      <main className="grid">
+        <section className="panel">
+          <h2>Employee Service</h2>
+          <form onSubmit={createEmployee} className="form">
+            <input placeholder="Employee ID" value={employeeForm.employeeId} onChange={(e) => setEmployeeForm({ ...employeeForm, employeeId: e.target.value })} required />
+            <input placeholder="Full Name" value={employeeForm.name} onChange={(e) => setEmployeeForm({ ...employeeForm, name: e.target.value })} required />
+            <input placeholder="Department" value={employeeForm.department} onChange={(e) => setEmployeeForm({ ...employeeForm, department: e.target.value })} required />
+            <input placeholder="Title" value={employeeForm.title} onChange={(e) => setEmployeeForm({ ...employeeForm, title: e.target.value })} required />
+            <input placeholder="Salary" type="number" value={employeeForm.salary} onChange={(e) => setEmployeeForm({ ...employeeForm, salary: e.target.value })} required />
+            <button type="submit">Add Employee</button>
+          </form>
+          <ul className="list">
+            {employees.map((item) => (
+              <li key={item._id}>{item.employeeId} | {item.name} | {item.department}</li>
             ))}
-          </div>
+          </ul>
         </section>
 
-        <section>
-          <h2>Featured Lessons</h2>
-          <div className="grid">
-            {articles.map((article, index) => (
-              <article key={article.id} className="card">
-                <img className="lesson-image" src={aiGallery[index % aiGallery.length]} alt={article.title} />
-                <small>{article.category}</small>
-                <h3>{article.title}</h3>
-                <p>{article.summary}</p>
-              </article>
+        <section className="panel">
+          <h2>Leave Service</h2>
+          <form onSubmit={createLeave} className="form">
+            <input placeholder="Employee ID" value={leaveForm.employeeId} onChange={(e) => setLeaveForm({ ...leaveForm, employeeId: e.target.value })} required />
+            <input placeholder="Reason" value={leaveForm.reason} onChange={(e) => setLeaveForm({ ...leaveForm, reason: e.target.value })} required />
+            <input type="date" value={leaveForm.fromDate} onChange={(e) => setLeaveForm({ ...leaveForm, fromDate: e.target.value })} required />
+            <input type="date" value={leaveForm.toDate} onChange={(e) => setLeaveForm({ ...leaveForm, toDate: e.target.value })} required />
+            <button type="submit">Request Leave</button>
+          </form>
+          <ul className="list">
+            {leaves.map((item) => (
+              <li key={item._id}>
+                {item.employeeId} | {item.reason} | {item.status}
+                {item.status !== 'APPROVED' && (
+                  <button className="mini" onClick={() => approveLeave(item._id)}>
+                    Approve
+                  </button>
+                )}
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
 
-        <section>
-          <h2>AI Visual Lab</h2>
-          <div className="ai-grid">
-            {aiGallery.map((image, index) => (
-              <article key={image} className="ai-card">
-                <img src={image} alt={`AI generated cloud visual ${index + 1}`} />
-              </article>
+        <section className="panel">
+          <h2>Payroll Service</h2>
+          <form onSubmit={createPayroll} className="form">
+            <input placeholder="Employee ID" value={payrollForm.employeeId} onChange={(e) => setPayrollForm({ ...payrollForm, employeeId: e.target.value })} required />
+            <input placeholder="Month (YYYY-MM)" value={payrollForm.month} onChange={(e) => setPayrollForm({ ...payrollForm, month: e.target.value })} required />
+            <input type="number" placeholder="Base Salary" value={payrollForm.baseSalary} onChange={(e) => setPayrollForm({ ...payrollForm, baseSalary: e.target.value })} required />
+            <input type="number" placeholder="Bonus" value={payrollForm.bonus} onChange={(e) => setPayrollForm({ ...payrollForm, bonus: e.target.value })} />
+            <input type="number" placeholder="Deductions" value={payrollForm.deductions} onChange={(e) => setPayrollForm({ ...payrollForm, deductions: e.target.value })} />
+            <button type="submit">Generate Payroll</button>
+          </form>
+          <ul className="list">
+            {payroll.map((item) => (
+              <li key={item._id}>{item.employeeId} | {item.month} | Net: ${item.netPay}</li>
             ))}
-          </div>
-        </section>
-
-        <section className="two-col">
-          <div className="card">
-            <h2>Learning Roadmap</h2>
-            <p>
-              Start with DevOps fundamentals, move into cloud cost governance, adopt reliable SRE workflows, and
-              finally secure your delivery pipelines with practical cybersecurity controls.
-            </p>
-            <p>Each module includes architecture notes, implementation steps, and production troubleshooting tips.</p>
-          </div>
-          <ContactForm />
+          </ul>
         </section>
       </main>
     </div>

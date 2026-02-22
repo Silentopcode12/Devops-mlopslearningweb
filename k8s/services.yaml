@@ -1,0 +1,240 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: REGION-docker.pkg.dev/PROJECT/REPO/auth-service:latest
+          env:
+            - name: PORT
+              value: "8081"
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: hrms-secrets
+                  key: AUTH_MONGO_URI
+          ports:
+            - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: hrms
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - port: 8081
+      targetPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee-service
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: employee-service
+  template:
+    metadata:
+      labels:
+        app: employee-service
+    spec:
+      containers:
+        - name: employee-service
+          image: REGION-docker.pkg.dev/PROJECT/REPO/employee-service:latest
+          env:
+            - name: PORT
+              value: "8082"
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: hrms-secrets
+                  key: EMPLOYEE_MONGO_URI
+          ports:
+            - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: employee-service
+  namespace: hrms
+spec:
+  selector:
+    app: employee-service
+  ports:
+    - port: 8082
+      targetPort: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leave-service
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: leave-service
+  template:
+    metadata:
+      labels:
+        app: leave-service
+    spec:
+      containers:
+        - name: leave-service
+          image: REGION-docker.pkg.dev/PROJECT/REPO/leave-service:latest
+          env:
+            - name: PORT
+              value: "8083"
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: hrms-secrets
+                  key: LEAVE_MONGO_URI
+          ports:
+            - containerPort: 8083
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: leave-service
+  namespace: hrms
+spec:
+  selector:
+    app: leave-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payroll-service
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payroll-service
+  template:
+    metadata:
+      labels:
+        app: payroll-service
+    spec:
+      containers:
+        - name: payroll-service
+          image: REGION-docker.pkg.dev/PROJECT/REPO/payroll-service:latest
+          env:
+            - name: PORT
+              value: "8084"
+            - name: MONGO_URI
+              valueFrom:
+                secretKeyRef:
+                  name: hrms-secrets
+                  key: PAYROLL_MONGO_URI
+          ports:
+            - containerPort: 8084
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payroll-service
+  namespace: hrms
+spec:
+  selector:
+    app: payroll-service
+  ports:
+    - port: 8084
+      targetPort: 8084
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  namespace: hrms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: REGION-docker.pkg.dev/PROJECT/REPO/gateway:latest
+          env:
+            - name: PORT
+              value: "8080"
+            - name: AUTH_SERVICE_URL
+              value: http://auth-service:8081
+            - name: EMPLOYEE_SERVICE_URL
+              value: http://employee-service:8082
+            - name: LEAVE_SERVICE_URL
+              value: http://leave-service:8083
+            - name: PAYROLL_SERVICE_URL
+              value: http://payroll-service:8084
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway
+  namespace: hrms
+spec:
+  selector:
+    app: gateway
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: hrms
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: REGION-docker.pkg.dev/PROJECT/REPO/frontend:latest
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: hrms
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80

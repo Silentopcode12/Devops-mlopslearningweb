@@ -1,53 +1,80 @@
 services:
   frontend:
-    build:
-      context: ./frontend
+    build: ./frontend
     ports:
       - "5173:80"
     depends_on:
-      - backend
+      - gateway
 
-  backend:
-    build:
-      context: ./backend
-    environment:
-      - PORT=8080
-      - MONGO_URI=mongodb://mongo:27017/cloud_native_ops
-      - FRONTEND_ORIGIN=http://localhost:5173
+  gateway:
+    build: ./services/gateway
     ports:
       - "8080:8080"
-    depends_on:
-      - mongo
-
-  mongo:
-    image: mongo:7
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-
-  prometheus:
-    image: prom/prometheus:v2.54.1
-    volumes:
-      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    depends_on:
-      - backend
-
-  grafana:
-    image: grafana/grafana:11.1.4
-    ports:
-      - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - ./infra/grafana/provisioning:/etc/grafana/provisioning
-      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards
+      - AUTH_SERVICE_URL=http://auth-service:8081
+      - EMPLOYEE_SERVICE_URL=http://employee-service:8082
+      - LEAVE_SERVICE_URL=http://leave-service:8083
+      - PAYROLL_SERVICE_URL=http://payroll-service:8084
     depends_on:
-      - prometheus
+      - auth-service
+      - employee-service
+      - leave-service
+      - payroll-service
+
+  auth-service:
+    build: ./services/auth-service
+    environment:
+      - PORT=8081
+      - MONGO_URI=mongodb://mongo-auth:27017/hrms_auth
+    depends_on:
+      - mongo-auth
+
+  employee-service:
+    build: ./services/employee-service
+    environment:
+      - PORT=8082
+      - MONGO_URI=mongodb://mongo-employee:27017/hrms_employee
+    depends_on:
+      - mongo-employee
+
+  leave-service:
+    build: ./services/leave-service
+    environment:
+      - PORT=8083
+      - MONGO_URI=mongodb://mongo-leave:27017/hrms_leave
+    depends_on:
+      - mongo-leave
+
+  payroll-service:
+    build: ./services/payroll-service
+    environment:
+      - PORT=8084
+      - MONGO_URI=mongodb://mongo-payroll:27017/hrms_payroll
+    depends_on:
+      - mongo-payroll
+
+  mongo-auth:
+    image: mongo:7
+    volumes:
+      - mongo_auth_data:/data/db
+
+  mongo-employee:
+    image: mongo:7
+    volumes:
+      - mongo_employee_data:/data/db
+
+  mongo-leave:
+    image: mongo:7
+    volumes:
+      - mongo_leave_data:/data/db
+
+  mongo-payroll:
+    image: mongo:7
+    volumes:
+      - mongo_payroll_data:/data/db
 
 volumes:
-  mongo_data:
+  mongo_auth_data:
+  mongo_employee_data:
+  mongo_leave_data:
+  mongo_payroll_data:

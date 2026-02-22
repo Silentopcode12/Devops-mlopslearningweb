@@ -1,56 +1,53 @@
-# Cloud Native Ops Portal
+# HRMS Microservices Platform
 
-A full-stack website starter by **Shresh** focused on DevOps, FinOps, MLOps, SRE, and Cybersecurity.
+Production-style HRMS starter built with microservice architecture.
 
-## Stack
-- Frontend: React + Vite
-- Backend: Node.js + Express
-- Database: MongoDB (Atlas Free Tier compatible)
-- Containers: Docker + Docker Compose
-- Orchestration: Kubernetes (GKE-ready manifests)
-- Observability: Prometheus + Grafana
+## Services
+- `frontend` (React + Vite)
+- `gateway` (API Gateway on port `8080`)
+- `auth-service` (users, auth stubs)
+- `employee-service` (employee records)
+- `leave-service` (leave requests)
+- `payroll-service` (payroll records)
 
-## Quick Start (Local)
+Each domain service owns its own Mongo database.
 
-### 1) Run with Docker Compose
+## Architecture
+- Frontend calls only the API Gateway.
+- Gateway routes traffic to internal services.
+- Services are independently deployable and independently scalable.
+
+## Local Run
 ```bash
-docker compose up --build
+docker-compose up --build -d
 ```
 
-Services:
+App URLs:
 - Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:8080`
-- Prometheus: `http://localhost:9090`
-- Grafana: `http://localhost:3000` (admin/admin)
+- API Gateway: `http://localhost:8080`
 
-### 2) Environment Variables
-Copy and adjust:
-```bash
-cp backend/.env.example backend/.env
-```
+Health checks:
+- `GET /health` on gateway
+- `GET /health` on each service
 
-For MongoDB Atlas in local/dev, replace `MONGO_URI` in `backend/.env`.
+## Service Endpoints via Gateway
+- `POST /api/auth/register`
+- `GET /api/auth/users`
+- `GET /api/employees`
+- `POST /api/employees`
+- `GET /api/leave`
+- `POST /api/leave`
+- `PATCH /api/leave/:id/approve`
+- `GET /api/payroll`
+- `POST /api/payroll`
 
-## API Endpoints
-- `GET /api/health`
-- `GET /api/articles`
-- `POST /api/contact`
-- `GET /metrics`
+## Kubernetes
+Manifests are in `k8s/`.
+- Create namespace and secrets first.
+- Deploy databases, services, gateway, frontend, ingress.
 
-## Kubernetes Deployment (GKE)
-1. Build and push images to Artifact Registry.
-2. Create namespace and secret:
-```bash
-kubectl apply -f infra/k8s/namespace.yaml
-kubectl apply -f infra/k8s/secret-template.yaml
-```
-3. Apply workloads:
-```bash
-kubectl apply -f infra/k8s/backend.yaml
-kubectl apply -f infra/k8s/frontend.yaml
-kubectl apply -f infra/k8s/ingress.yaml
-```
-
-## Notes
-- Production setup should use MongoDB Atlas and managed secrets (GCP Secret Manager).
-- Replace placeholder AI image URLs in frontend with your generated assets.
+## Next Recommended Steps
+- Add JWT auth and RBAC.
+- Add Kafka/RabbitMQ for async payroll events.
+- Add Redis cache and rate limiting at gateway.
+- Add CI/CD and security scanning.

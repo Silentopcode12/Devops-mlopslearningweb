@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-auth
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-auth
+  template:
+    metadata:
+      labels:
+        app: mongo-auth
+    spec:
+      containers:
+        - name: mongo-auth
+          image: mongo:7
+          ports:
+            - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-auth
+  namespace: hrms
+spec:
+  selector:
+    app: mongo-auth
+  ports:
+    - port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-employee
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-employee
+  template:
+    metadata:
+      labels:
+        app: mongo-employee
+    spec:
+      containers:
+        - name: mongo-employee
+          image: mongo:7
+          ports:
+            - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-employee
+  namespace: hrms
+spec:
+  selector:
+    app: mongo-employee
+  ports:
+    - port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-leave
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-leave
+  template:
+    metadata:
+      labels:
+        app: mongo-leave
+    spec:
+      containers:
+        - name: mongo-leave
+          image: mongo:7
+          ports:
+            - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-leave
+  namespace: hrms
+spec:
+  selector:
+    app: mongo-leave
+  ports:
+    - port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-payroll
+  namespace: hrms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-payroll
+  template:
+    metadata:
+      labels:
+        app: mongo-payroll
+    spec:
+      containers:
+        - name: mongo-payroll
+          image: mongo:7
+          ports:
+            - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-payroll
+  namespace: hrms
+spec:
+  selector:
+    app: mongo-payroll
+  ports:
+    - port: 27017
+      targetPort: 27017
