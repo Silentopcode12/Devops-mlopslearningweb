@@ -1,0 +1,145 @@
+:root {
+  --bg: #081018;
+  --bg-soft: #0f1f2e;
+  --text: #eaf1ff;
+  --muted: #9fb3ca;
+  --brand: #1fbf8f;
+  --accent: #48a8ff;
+  --card: #102131;
+  --border: #1f3a54;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at top right, #143755, var(--bg) 65%);
+  color: var(--text);
+}
+
+.hero {
+  position: relative;
+  min-height: 52vh;
+  display: flex;
+  align-items: center;
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.35)),
+    url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1500&q=80');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-content {
+  max-width: 860px;
+  padding: 2.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.tag {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand);
+  font-size: 0.8rem;
+}
+
+.hero h1 {
+  margin: 0.5rem 0 1rem;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1.1;
+}
+
+.container {
+  width: min(1100px, 92%);
+  margin: 2.5rem auto 4rem;
+  display: grid;
+  gap: 2rem;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.chips span {
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(31, 191, 143, 0.12);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.card,
+.contact-form {
+  background: linear-gradient(180deg, rgba(16, 33, 49, 0.92), rgba(12, 24, 36, 0.92));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.card h3 {
+  margin: 0.35rem 0;
+}
+
+.card p,
+.contact-form p {
+  color: var(--muted);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.contact-form {
+  display: grid;
+  gap: 0.7rem;
+}
+
+input,
+select,
+textarea,
+button {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 0.7rem;
+  background: var(--bg-soft);
+  color: var(--text);
+}
+
+button {
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--brand), var(--accent));
+  color: #001320;
+  font-weight: 700;
+  border: none;
+}
+
+.status {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    min-height: 60vh;
+  }
+
+  .hero-content {
+    padding: 1.4rem;
+  }
+}
