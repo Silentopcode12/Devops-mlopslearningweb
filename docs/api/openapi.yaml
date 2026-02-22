@@ -126,6 +126,57 @@ paths:
         '200':
           description: Check-out updated
 
+  /api/v1/leaves:
+    get:
+      summary: List leave requests
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Leave list
+    post:
+      summary: Create leave request
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+      responses:
+        '201':
+          description: Leave created
+
+  /api/v1/leaves/{id}/approve:
+    patch:
+      summary: Approve leave request
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Approved
+
+  /api/v1/payroll:
+    get:
+      summary: List payroll records
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Payroll list
+    post:
+      summary: Create payroll payslip
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+      responses:
+        '201':
+          description: Payroll created
+
   /api/v1/audit-logs:
     get:
       summary: List audit logs

@@ -12,6 +12,8 @@ const authRoutes = require('./modules/auth/routes');
 const employeeRoutes = require('./modules/employees/routes');
 const attendanceRoutes = require('./modules/attendance/routes');
 const auditRoutes = require('./modules/audit/routes');
+const leaveRoutes = require('./modules/leaves/routes');
+const payrollRoutes = require('./modules/payroll/routes');
 
 const app = express();
 
@@ -36,6 +38,8 @@ app.get('/health', async (req, res) => {
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/employees', employeeRoutes);
 app.use('/api/v1/attendance', attendanceRoutes);
+app.use('/api/v1/leaves', leaveRoutes);
+app.use('/api/v1/payroll', payrollRoutes);
 app.use('/api/v1/audit-logs', auditRoutes);
 
 app.listen(port, () => {

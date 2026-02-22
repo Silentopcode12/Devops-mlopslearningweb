@@ -10,10 +10,12 @@ Production-oriented HRMS foundation inspired by enterprise HR patterns.
 - Storage: S3-compatible design hooks
 - Notifications: webhook + notification table/event stubs
 
-## Modules Included (Foundation)
+## Modules Included (Working)
 - Auth + RBAC + multi-tenant guards
 - Employee Management (CRUD)
-- Attendance Tracking (check-in/out, geofence metadata)
+- Attendance Tracking (check-in/out by employee code, geofence metadata)
+- Leave Management (request + approval)
+- Payroll (record generation + net pay persistence)
 - Audit Logs
 
 ## SaaS + Enterprise Design
@@ -37,6 +39,7 @@ URLs:
 docker compose logs -f api
 docker compose exec api npm run db:migrate
 docker compose exec api npm run db:seed
+docker compose exec postgres psql -U postgres -d hrms -c \"select employee_code, full_name from employees;\"
 ```
 
 ## Folder Layout

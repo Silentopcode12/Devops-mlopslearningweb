@@ -8,14 +8,19 @@ const { withAudit } = require('../../middleware/audit');
 
 const router = express.Router();
 
-const checkInSchema = z.object({
-  employee_id: z.string().uuid(),
+const checkInSchema = z
+  .object({
+  employee_id: z.string().uuid().optional(),
+  employee_code: z.string().min(2).optional(),
   check_in_at: z.string(),
   source: z.enum(['manual', 'biometric', 'remote']),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   geofence_label: z.string().optional()
-});
+  })
+  .refine((data) => data.employee_id || data.employee_code, {
+    message: 'employee_id or employee_code is required'
+  });
 
 router.get('/', requireAuth, requireTenant, requirePermission('attendance:read'), async (req, res) => {
   const result = await query(
@@ -40,13 +45,26 @@ router.post(
     if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
 
     const data = parsed.data;
+    let employeeId = data.employee_id;
+
+    if (!employeeId && data.employee_code) {
+      const employeeResult = await query(
+        'SELECT id FROM employees WHERE tenant_id = $1 AND employee_code = $2',
+        [req.tenantId, data.employee_code]
+      );
+      if (!employeeResult.rowCount) {
+        return res.status(404).json({ error: 'Employee not found for code' });
+      }
+      employeeId = employeeResult.rows[0].id;
+    }
+
     const result = await query(
       `INSERT INTO attendance_logs (tenant_id, employee_id, check_in_at, source, latitude, longitude, geofence_label)
        VALUES ($1,$2,$3,$4,$5,$6,$7)
        RETURNING id, employee_id, check_in_at, source, latitude, longitude, geofence_label`,
       [
         req.tenantId,
-        data.employee_id,
+        employeeId,
         data.check_in_at,
         data.source,
         data.latitude || null,
