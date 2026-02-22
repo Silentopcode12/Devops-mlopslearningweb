@@ -3,6 +3,13 @@ import ContactForm from './components/ContactForm';
 
 const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 const profileImage = '/shresh.jpg';
+const heroAiImage =
+  'https://image.pollinations.ai/prompt/futuristic%20cloud%20native%20learning%20platform%20dashboard%20with%20kubernetes%20devops%20cybersecurity%20cinematic%20lighting%20high%20detail?width=1400&height=900&seed=3001';
+const aiGallery = [
+  'https://image.pollinations.ai/prompt/devops%20engineer%20working%20on%20multi%20screen%20kubernetes%20monitoring%20setup%20ultra%20realistic?width=900&height=600&seed=3101',
+  'https://image.pollinations.ai/prompt/mlops%20pipeline%20architecture%20with%20model%20deployment%20and%20observability%20dark%20theme%20cinematic?width=900&height=600&seed=3102',
+  'https://image.pollinations.ai/prompt/finops%20cloud%20cost%20optimization%20analytics%20dashboard%20professional%20ui%20high%20detail?width=900&height=600&seed=3103'
+];
 
 const tracks = [
   {
@@ -40,6 +47,7 @@ export default function App() {
   return (
     <div className="site-shell">
       <header className="hero">
+        <img className="hero-ai" src={heroAiImage} alt="AI cloud learning banner" />
         <div className="hero-content stack">
           <div>
             <p className="tag">Shresh Learning Platform</p>
@@ -85,11 +93,23 @@ export default function App() {
         <section>
           <h2>Featured Lessons</h2>
           <div className="grid">
-            {articles.map((article) => (
+            {articles.map((article, index) => (
               <article key={article.id} className="card">
+                <img className="lesson-image" src={aiGallery[index % aiGallery.length]} alt={article.title} />
                 <small>{article.category}</small>
                 <h3>{article.title}</h3>
                 <p>{article.summary}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2>AI Visual Lab</h2>
+          <div className="ai-grid">
+            {aiGallery.map((image, index) => (
+              <article key={image} className="ai-card">
+                <img src={image} alt={`AI generated cloud visual ${index + 1}`} />
               </article>
             ))}
           </div>

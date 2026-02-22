@@ -25,14 +25,28 @@ body {
   display: grid;
   align-items: center;
   border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
   background: radial-gradient(circle at 20% 20%, #23385f 0%, transparent 45%),
     radial-gradient(circle at 80% 20%, #4f3e2a 0%, transparent 30%);
+}
+
+.hero-ai {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.28;
+  filter: saturate(1.2) contrast(1.05);
 }
 
 .hero-content {
   width: min(1150px, 92%);
   margin: 0 auto;
   padding: 3rem 0;
+  position: relative;
+  z-index: 1;
 }
 
 .tag {
@@ -92,6 +106,15 @@ h2 {
 
 .card h3 {
   margin: 0.35rem 0;
+}
+
+.lesson-image {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--border);
 }
 
 .card p,
@@ -166,6 +189,28 @@ h2 {
   display: block;
   margin-top: 0.8rem;
   color: #7fa2cc;
+}
+
+.ai-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.ai-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  min-height: 190px;
+  background: #111a27;
+}
+
+.ai-card img {
+  width: 100%;
+  height: 100%;
+  min-height: 190px;
+  object-fit: cover;
+  display: block;
 }
 
 .contact-form {
