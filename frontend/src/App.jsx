@@ -78,20 +78,37 @@ export default function App() {
   return (
     <div className="app">
       <header className="hero">
-        <h1>HRMS Control Center</h1>
-        <p>Microservice-based HR platform for employee lifecycle, leave workflows, and payroll operations.</p>
+        <div className="noise" />
+        <nav className="topbar">
+          <p className="brand">SHRESH HRMS</p>
+          <div className="top-chips">
+            <span>Microservices</span>
+            <span>Realtime Ops</span>
+            <span>Enterprise Ready</span>
+          </div>
+        </nav>
+        <div className="hero-copy">
+          <h1>Command Your Workforce with Precision</h1>
+          <p>
+            Verbaflo-style premium HRMS experience with clean workflows for employees, leave approvals, and payroll
+            execution.
+          </p>
+        </div>
       </header>
 
       <section className="stats">
-        <article>
+        <article className="stat-card">
+          <small>HR Core</small>
           <h3>{totalHeadcount}</h3>
           <p>Total Employees</p>
         </article>
-        <article>
+        <article className="stat-card">
+          <small>Leave Desk</small>
           <h3>{approvedLeaves}</h3>
           <p>Approved Leaves</p>
         </article>
-        <article>
+        <article className="stat-card">
+          <small>Payroll Desk</small>
           <h3>${totalPayroll}</h3>
           <p>Total Payroll Recorded</p>
         </article>
@@ -99,26 +116,67 @@ export default function App() {
 
       <main className="grid">
         <section className="panel">
-          <h2>Employee Service</h2>
+          <div className="panel-head">
+            <h2>Employee Service</h2>
+            <span>Service: 8082</span>
+          </div>
           <form onSubmit={createEmployee} className="form">
-            <input placeholder="Employee ID" value={employeeForm.employeeId} onChange={(e) => setEmployeeForm({ ...employeeForm, employeeId: e.target.value })} required />
-            <input placeholder="Full Name" value={employeeForm.name} onChange={(e) => setEmployeeForm({ ...employeeForm, name: e.target.value })} required />
-            <input placeholder="Department" value={employeeForm.department} onChange={(e) => setEmployeeForm({ ...employeeForm, department: e.target.value })} required />
-            <input placeholder="Title" value={employeeForm.title} onChange={(e) => setEmployeeForm({ ...employeeForm, title: e.target.value })} required />
-            <input placeholder="Salary" type="number" value={employeeForm.salary} onChange={(e) => setEmployeeForm({ ...employeeForm, salary: e.target.value })} required />
+            <input
+              placeholder="Employee ID"
+              value={employeeForm.employeeId}
+              onChange={(e) => setEmployeeForm({ ...employeeForm, employeeId: e.target.value })}
+              required
+            />
+            <input
+              placeholder="Full Name"
+              value={employeeForm.name}
+              onChange={(e) => setEmployeeForm({ ...employeeForm, name: e.target.value })}
+              required
+            />
+            <input
+              placeholder="Department"
+              value={employeeForm.department}
+              onChange={(e) => setEmployeeForm({ ...employeeForm, department: e.target.value })}
+              required
+            />
+            <input
+              placeholder="Title"
+              value={employeeForm.title}
+              onChange={(e) => setEmployeeForm({ ...employeeForm, title: e.target.value })}
+              required
+            />
+            <input
+              placeholder="Salary"
+              type="number"
+              value={employeeForm.salary}
+              onChange={(e) => setEmployeeForm({ ...employeeForm, salary: e.target.value })}
+              required
+            />
             <button type="submit">Add Employee</button>
           </form>
           <ul className="list">
             {employees.map((item) => (
-              <li key={item._id}>{item.employeeId} | {item.name} | {item.department}</li>
+              <li key={item._id}>
+                <span>{item.employeeId}</span>
+                <strong>{item.name}</strong>
+                <em>{item.department}</em>
+              </li>
             ))}
           </ul>
         </section>
 
         <section className="panel">
-          <h2>Leave Service</h2>
+          <div className="panel-head">
+            <h2>Leave Service</h2>
+            <span>Service: 8083</span>
+          </div>
           <form onSubmit={createLeave} className="form">
-            <input placeholder="Employee ID" value={leaveForm.employeeId} onChange={(e) => setLeaveForm({ ...leaveForm, employeeId: e.target.value })} required />
+            <input
+              placeholder="Employee ID"
+              value={leaveForm.employeeId}
+              onChange={(e) => setLeaveForm({ ...leaveForm, employeeId: e.target.value })}
+              required
+            />
             <input placeholder="Reason" value={leaveForm.reason} onChange={(e) => setLeaveForm({ ...leaveForm, reason: e.target.value })} required />
             <input type="date" value={leaveForm.fromDate} onChange={(e) => setLeaveForm({ ...leaveForm, fromDate: e.target.value })} required />
             <input type="date" value={leaveForm.toDate} onChange={(e) => setLeaveForm({ ...leaveForm, toDate: e.target.value })} required />
@@ -127,9 +185,11 @@ export default function App() {
           <ul className="list">
             {leaves.map((item) => (
               <li key={item._id}>
-                {item.employeeId} | {item.reason} | {item.status}
+                <span>{item.employeeId}</span>
+                <strong>{item.reason}</strong>
+                <em>{item.status}</em>
                 {item.status !== 'APPROVED' && (
-                  <button className="mini" onClick={() => approveLeave(item._id)}>
+                  <button className="mini" type="button" onClick={() => approveLeave(item._id)}>
                     Approve
                   </button>
                 )}
@@ -139,18 +199,51 @@ export default function App() {
         </section>
 
         <section className="panel">
-          <h2>Payroll Service</h2>
+          <div className="panel-head">
+            <h2>Payroll Service</h2>
+            <span>Service: 8084</span>
+          </div>
           <form onSubmit={createPayroll} className="form">
-            <input placeholder="Employee ID" value={payrollForm.employeeId} onChange={(e) => setPayrollForm({ ...payrollForm, employeeId: e.target.value })} required />
-            <input placeholder="Month (YYYY-MM)" value={payrollForm.month} onChange={(e) => setPayrollForm({ ...payrollForm, month: e.target.value })} required />
-            <input type="number" placeholder="Base Salary" value={payrollForm.baseSalary} onChange={(e) => setPayrollForm({ ...payrollForm, baseSalary: e.target.value })} required />
-            <input type="number" placeholder="Bonus" value={payrollForm.bonus} onChange={(e) => setPayrollForm({ ...payrollForm, bonus: e.target.value })} />
-            <input type="number" placeholder="Deductions" value={payrollForm.deductions} onChange={(e) => setPayrollForm({ ...payrollForm, deductions: e.target.value })} />
+            <input
+              placeholder="Employee ID"
+              value={payrollForm.employeeId}
+              onChange={(e) => setPayrollForm({ ...payrollForm, employeeId: e.target.value })}
+              required
+            />
+            <input
+              placeholder="Month (YYYY-MM)"
+              value={payrollForm.month}
+              onChange={(e) => setPayrollForm({ ...payrollForm, month: e.target.value })}
+              required
+            />
+            <input
+              type="number"
+              placeholder="Base Salary"
+              value={payrollForm.baseSalary}
+              onChange={(e) => setPayrollForm({ ...payrollForm, baseSalary: e.target.value })}
+              required
+            />
+            <input
+              type="number"
+              placeholder="Bonus"
+              value={payrollForm.bonus}
+              onChange={(e) => setPayrollForm({ ...payrollForm, bonus: e.target.value })}
+            />
+            <input
+              type="number"
+              placeholder="Deductions"
+              value={payrollForm.deductions}
+              onChange={(e) => setPayrollForm({ ...payrollForm, deductions: e.target.value })}
+            />
             <button type="submit">Generate Payroll</button>
           </form>
           <ul className="list">
             {payroll.map((item) => (
-              <li key={item._id}>{item.employeeId} | {item.month} | Net: ${item.netPay}</li>
+              <li key={item._id}>
+                <span>{item.employeeId}</span>
+                <strong>{item.month}</strong>
+                <em>Net ${item.netPay}</em>
+              </li>
             ))}
           </ul>
         </section>
