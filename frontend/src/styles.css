@@ -164,6 +164,37 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
+.module-panel {
+  margin-bottom: 1rem;
+}
+
+.module-grid {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.module-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(9, 14, 29, 0.82);
+  padding: 0.8rem;
+}
+
+.module-card h3 {
+  margin: 0 0 0.55rem;
+  font-size: 0.98rem;
+}
+
+.module-card ul {
+  margin: 0;
+  padding-left: 1rem;
+  color: var(--muted);
+  display: grid;
+  gap: 0.3rem;
+}
+
 .panel {
   border: 1px solid var(--line);
   border-radius: 16px;

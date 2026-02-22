@@ -5,6 +5,28 @@ const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 const emptyEmployee = { employeeId: '', name: '', department: '', title: '', salary: '' };
 const emptyLeave = { employeeId: '', reason: '', fromDate: '', toDate: '' };
 const emptyPayroll = { employeeId: '', month: '', baseSalary: '', bonus: '', deductions: '' };
+const moduleCatalog = [
+  {
+    name: 'Hire & Onboarding',
+    items: ['Requisition Management', 'Career Portal', 'Interview Scheduling', 'Offer Management', 'Onboarding Checklist']
+  },
+  {
+    name: 'Core HR & ESS',
+    items: ['Employee Profiles', 'Employee Self-Service', 'Helpdesk', 'Documents', 'Pulse Surveys']
+  },
+  {
+    name: 'Time, Attendance & Leave',
+    items: ['GPS/Selfie Attendance', 'Shift & OT Management', 'Attendance Regularization', 'Advanced Leave Management', 'Roster Management']
+  },
+  {
+    name: 'Payroll & Compliance',
+    items: ['Payroll Automation', 'Statutory Compliance', 'Expense Management', 'Benefits Tracking', 'Tax Computation']
+  },
+  {
+    name: 'Performance & Growth',
+    items: ['OKRs & Goals', 'Continuous Feedback', 'Performance Reviews', '9-box Matrix', 'Career Path']
+  }
+];
 
 export default function App() {
   const [employees, setEmployees] = useState([]);
@@ -112,6 +134,25 @@ export default function App() {
           <h3>${totalPayroll}</h3>
           <p>Total Payroll Recorded</p>
         </article>
+      </section>
+
+      <section className="panel module-panel">
+        <div className="panel-head">
+          <h2>Keka-Inspired HRMS Modules</h2>
+          <span>Reference Model</span>
+        </div>
+        <div className="module-grid">
+          {moduleCatalog.map((group) => (
+            <article key={group.name} className="module-card">
+              <h3>{group.name}</h3>
+              <ul>
+                {group.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
       </section>
 
       <main className="grid">
